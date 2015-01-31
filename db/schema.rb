@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141634458945) do
+ActiveRecord::Schema.define(version: 20142745469945) do
 
   create_table "user_images", force: true do |t|
     t.string   "avatar_file_name"
@@ -22,6 +22,10 @@ ActiveRecord::Schema.define(version: 20141634458945) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "url"
+    t.integer  "box_id"
+    t.string   "title"
+    t.float    "lng"
+    t.float    "lat"
   end
 
   create_table "users", force: true do |t|

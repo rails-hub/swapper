@@ -8,16 +8,16 @@ class UserController < ApiController
   # phone - string (optional)
   def register_api
     # begin
-      email = register_api_params[:email].downcase
-      @user = User.find_by_email(email)
-      if @user.blank?
-        @user = User.create(:email => email, :username => register_api_params[:username], :password => register_api_params[:password], :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
-        render :json => @user
-      else
-        @user.update_attributes(:lng => register_api_params[:lng].to_f, :lat => register_api_params[:lat].to_f)
-        images = images_with_distance(@user, register_api_params[:distance])
-        render :json => {:user => @user, :images => images}
-      end
+    email = register_api_params[:email].downcase
+    @user = User.find_by_email(email)
+    if @user.blank?
+      @user = User.create(:email => email, :username => register_api_params[:username], :password => register_api_params[:password], :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
+      render :json => @user
+    else
+      @user.update_attributes(:lng => register_api_params[:lng].to_f, :lat => register_api_params[:lat].to_f)
+      images = images_with_distance(@user, register_api_params[:distance])
+      render :json => {:user => @user, :images => images}
+    end
     # rescue Exception => e
     #   error "Please provide all required fields"
     # end
@@ -124,7 +124,7 @@ class UserController < ApiController
         img.user_id = user.id
         @save_img = img.save
         @url = img.avatar.url
-        img.update_attribute('url', @url)
+        img.update_attributes(:url => @url, :box_id => pic_api_params[:box_id], :title => pic_api_params[:title], :lat => pic_api_params[:lat], :lng => pic_api_params[:lng])
         @url_medium = img.avatar.url(:medium)
         @url_thumb = img.avatar.url(:thumb)
         @id = img.id
@@ -132,20 +132,6 @@ class UserController < ApiController
       end
       #Once image upload is successful check users with less than 20 meter range difference from this user
       puts "THIS-IS-USER::::", user.inspect
-      users = User.where('id != ?', user.id)
-      unless users.blank?
-        users.each do |u|
-          find_distance = distance user.lat, user.lng, u.lat, u.lng
-          puts "LAT1::::::::::::", user.lat.inspect
-          puts "LNG1::::::::::::", user.lng.inspect
-          puts "LAT2::::::::::::", u.lat.inspect
-          puts "LNG2::::::::::::", u.lng.inspect
-          puts "DISTANCE::::::::", find_distance.inspect
-          # if find_distance <= 10000000
-          # PushController.push_message_to_user "#{@id}", u, "New Picture", @id, @url, @url_medium, @url_thumb
-          # end
-        end
-      end
       if @id != 0
         render :json => {:status => 200, :message => "Image uploaded successfully", :id => @id, :url_original => @url, :url_medium => @url_medium, :url_thumb => @url_thumb}
       else
@@ -196,18 +182,19 @@ class UserController < ApiController
 
   def images_with_distance(user, dis)
     images = nil
-    # users with required distance
-    users = []
-    User.where('id != ?', user.id).each do |f|
+    # images with required distance
+    users_images = []
+    UserImage.where('user_id != ?', user.id).each do |f|
       find_distance = distance user.lat, user.lng, f.lat, f.lng
+      puts "AAAAAAAAA",user.lat.inspect
+      puts "AAAAAAAAA",f.lat.inspect
+      puts "AAAAAAAAA",find_distance.inspect
+      puts "AAAAAAAAA",find_distance.inspect
       if find_distance <= dis.to_f
-        users << f
+        users_images << f
       end
     end
-    unless users.empty?
-      images = UserImage.where('user_id in (?)', users.map(&:id))
-    end
-    return images
+    users_images
   end
 
   def distance lat1, long1, lat2, long2
@@ -252,7 +239,7 @@ class UserController < ApiController
   end
 
   def pic_api_params
-    params.permit(:auth_token, :username, :image_data, :lng, :lat)
+    params.permit(:auth_token, :username, :image_data, :lng, :lat, :box_id, :title)
   end
 
   def user_img_params
