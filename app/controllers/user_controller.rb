@@ -186,7 +186,8 @@ class UserController < ApiController
     images = nil
     # images with required distance
     users_images = []
-    UserImage.where('user_id = ?', user.id).each do |f|
+    i = 0
+    UserImage.where('user_id = ?', user.id).order("created_at DESC").each do |f|
       find_distance = distance user.lat, user.lng, f.lat, f.lng
       puts "AAAAAAAAA", user.lat.inspect
       puts "AAAAAAAAA", f.lat.inspect
@@ -194,6 +195,10 @@ class UserController < ApiController
       puts "AAAAAAAAA", find_distance.inspect
       if find_distance <= dis.to_f
         users_images << f
+        if i >= 5
+          return users_images
+        end
+        i = i + 1
       end
     end
     users_images
