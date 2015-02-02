@@ -7,20 +7,22 @@ class UserController < ApiController
   # email - string
   # phone - string (optional)
   def register_api
-    # begin
-    email = register_api_params[:email].downcase
-    @user = User.find_by_email(email)
-    if @user.blank?
-      @user = User.create(:email => email, :username => register_api_params[:username], :password => register_api_params[:password], :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
-      render :json => @user
-    else
-      @user.update_attributes(:lng => register_api_params[:lng].to_f, :lat => register_api_params[:lat].to_f)
-      images = images_with_distance(@user, register_api_params[:distance])
-      render :json => {:user => @user, :images => images}
+    begin
+      email = register_api_params[:email].blank? ? 'not_provided@not_provided.com' : register_api_params[:email].downcase
+      password = register_api_params[:password].blank? ? 'not_provided' : register_api_params[:password]
+      @user = User.find_by_device_token(register_api_params[:device_token])
+      if @user.blank?
+        @user = User.create(:email => email, :username => register_api_params[:username], :password => password, :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
+        images = images_with_distance(@user, register_api_params[:distance])
+        render :json => {:user => @user, :images => images}
+      else
+        @user.update_attributes(:lng => register_api_params[:lng].to_f, :lat => register_api_params[:lat].to_f)
+        images = images_with_distance(@user, register_api_params[:distance])
+        render :json => {:user => @user, :images => images}
+      end
+    rescue Exception => e
+      error "Please provide all required fields or Something went wrong."
     end
-    # rescue Exception => e
-    #   error "Please provide all required fields"
-    # end
   end
 
   def update_profile
@@ -186,10 +188,10 @@ class UserController < ApiController
     users_images = []
     UserImage.where('user_id = ?', user.id).each do |f|
       find_distance = distance user.lat, user.lng, f.lat, f.lng
-      puts "AAAAAAAAA",user.lat.inspect
-      puts "AAAAAAAAA",f.lat.inspect
-      puts "AAAAAAAAA",find_distance.inspect
-      puts "AAAAAAAAA",find_distance.inspect
+      puts "AAAAAAAAA", user.lat.inspect
+      puts "AAAAAAAAA", f.lat.inspect
+      puts "AAAAAAAAA", find_distance.inspect
+      puts "AAAAAAAAA", find_distance.inspect
       if find_distance <= dis.to_f
         users_images << f
       end
