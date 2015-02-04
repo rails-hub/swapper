@@ -7,22 +7,23 @@ class UserController < ApiController
   # email - string
   # phone - string (optional)
   def register_api
-    begin
-      email = register_api_params[:email].blank? ? "not_provided#{User.last.present? ? User.last.id : 0}@not_provided.com" : register_api_params[:email].downcase
-      password = register_api_params[:password].blank? ? 'not_provided' : register_api_params[:password]
-      @user = User.find_by_device_token(register_api_params[:device_token])
-      if @user.blank?
-        @user = User.create(:email => email, :username => register_api_params[:username], :password => password, :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
-        images = images_with_distance(@user, register_api_params[:distance])
-        render :json => {:user => @user, :images => images}
-      else
-        @user.update_attributes(:lng => register_api_params[:lng].to_f, :lat => register_api_params[:lat].to_f)
-        images = images_with_distance(@user, register_api_params[:distance])
-        render :json => {:user => @user, :images => images}
-      end
-    rescue Exception => e
-      error "Please provide all required fields or Something went wrong."
+    # begin
+    email = register_api_params[:email].blank? ? "not_provided#{User.last.present? ? User.last.id : 0}@not_provided.com" : register_api_params[:email].downcase
+    password = register_api_params[:password].blank? ? 'not_provided' : register_api_params[:password]
+    @user = User.find_by_device_token(register_api_params[:device_token])
+    @user = User.find_by_email(email) if @user.blank?
+    if @user.blank?
+      @user = User.create(:email => email, :username => register_api_params[:username], :password => password, :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
+      images = images_with_distance(@user, register_api_params[:distance])
+      render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
+    else
+      @user.update_attributes(:lng => register_api_params[:lng].to_f, :lat => register_api_params[:lat].to_f)
+      images = images_with_distance(@user, register_api_params[:distance])
+      render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
     end
+    # rescue Exception => e
+    #   error "Please provide all required fields or Something went wrong."
+    # end
   end
 
   def update_profile
