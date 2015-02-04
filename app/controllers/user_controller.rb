@@ -8,8 +8,8 @@ class UserController < ApiController
   # phone - string (optional)
   def register_api
     # begin
-    email = register_api_params[:email].blank? ? "not_provided#{User.last.present? ? User.last.id : 0}@not_provided.com" : register_api_params[:email].downcase
-    password = register_api_params[:password].blank? ? 'not_provided' : register_api_params[:password]
+    email = "not_provided#{User.last.present? ? User.last.id : 0}@not_provided.com"
+    password = 'not_provided'
     @user = User.find_by_device_token(register_api_params[:device_token])
     @user = User.find_by_email(email) if @user.blank?
     if @user.blank?
