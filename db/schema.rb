@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20142745469945) do
+ActiveRecord::Schema.define(version: 20142856579945) do
 
   create_table "user_images", force: true do |t|
     t.string   "avatar_file_name"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20142745469945) do
     t.string   "title"
     t.float    "lng"
     t.float    "lat"
+    t.string   "category"
   end
 
   create_table "users", force: true do |t|
