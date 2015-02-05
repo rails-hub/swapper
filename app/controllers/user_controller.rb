@@ -128,10 +128,10 @@ class UserController < ApiController
         img.avatar = data
         img.user_id = user.id
         @save_img = img.save
-        @url = img.avatar.url
+        @url = img.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')
         img.update_attributes(:url => @url, :box_id => pic_api_params[:box_id], :title => pic_api_params[:title], :lat => pic_api_params[:lat], :lng => pic_api_params[:lng])
-        @url_medium = img.avatar.url(:medium)
-        @url_thumb = img.avatar.url(:thumb)
+        @url_medium = img.avatar.url(:medium).to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')
+        @url_thumb = img.avatar.url(:thumb).to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')
         @id = img.id
         # PushController.push_message_to_user "Picture was uploaded", user, "Picture Uploaded Successfully", @id, @url, @url_medium, @url_thumb
       end
