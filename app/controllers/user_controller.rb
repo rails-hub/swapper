@@ -19,7 +19,8 @@ class UserController < ApiController
       render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
     else
       @user.update_attributes(:lng => register_api_params[:lng].to_f, :lat => register_api_params[:lat].to_f)
-      images = images_with_distance(@user, register_api_params[:distance])
+      # images = images_with_distance(@user, register_api_params[:distance])
+      images = UserImage.where('user_id = ?', user.id).order("created_at DESC").limit(6)
       render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
     end
     # rescue Exception => e
