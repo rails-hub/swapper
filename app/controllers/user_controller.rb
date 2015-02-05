@@ -232,7 +232,7 @@ class UserController < ApiController
   end
 
   def delete_all_others_of_this_box(except_this, user, box_id)
-    umg = user.user_images.where('box_id = ? & id != ?', box_id, except_this)
+    umg = user.user_images.where('box_id = ? AND id != ?', box_id, except_this)
     unless umg.blank?
       umg.each do |f|
         f.destroy
