@@ -186,6 +186,71 @@ class UserController < ApiController
 
   end
 
+  def like_pic
+    u = User.find_by_auth_token(like_pic_params[:auth_token])
+    unless u.blank?
+      pic = UserImage.find_by_id(like_pic_params[:id])
+      unless pic.blank?
+        find_pic = UserLike.where('user_id = ? and user_images_id = ?', u.id, pic.id)
+        if find_pic.blank?
+          user_like = UserLike.new(:user_id => u.id, :user_images_id => pic.id)
+          if user_like.save
+            success "Success"
+          else
+            error "Something went wrong."
+          end
+        else
+          error "You already liked this picture."
+        end
+      else
+        error "No such Picture found."
+      end
+    else
+      error "No such user found."
+    end
+
+  end
+
+  def report_pic
+    u = User.find_by_auth_token(like_pic_params[:auth_token])
+    unless u.blank?
+      pic = UserImage.find_by_id(like_pic_params[:id])
+      unless pic.blank?
+        find_report = UserReport.where('user_id = ? and user_images_id = ?', u.id, pic.id)
+        if find_report.blank?
+          user_report = UserReport.new(:user_id => u.id, :user_images_id => pic.id)
+          if user_report.save
+            pic_report = UserReport.find_by_user_image_id(pic.id)
+            if pic_report.count >= 3
+              pic.destroy
+              success "Reported and Image deleted."
+            else
+              success "Reported"
+            end
+          else
+            error "You already reported this picture."
+          end
+        else
+          error "Something went wrong."
+        end
+      else
+        error "No such Picture found."
+      end
+    else
+      error "No such user found."
+    end
+
+  end
+
+  def friends
+    u = User.find_by_auth_token(friends_api_params[:auth_token])
+    unless u.blank?
+      render :json => {:images => images_with_distance_and_cat(u, friends_api_params[:distance], friends_api_params[:category])}
+    else
+      error "No such user found."
+    end
+  end
+
   def images_with_distance(user, dis)
     images = nil
     # images with required distance
@@ -203,6 +268,23 @@ class UserController < ApiController
           return users_images
         end
         i = i + 1
+      end
+    end
+    users_images
+  end
+
+  def images_with_distance_and_cat(user, dis, cat)
+    images = nil
+    # images with required distance
+    users_images = []
+    UserImage.where('category = ?', cat).order("created_at DESC").each do |f|
+      find_distance = distance user.lat, user.lng, f.lat, f.lng
+      puts "AAAAAAAAA", user.lat.inspect
+      puts "AAAAAAAAA", f.lat.inspect
+      puts "AAAAAAAAA", find_distance.inspect
+      puts "AAAAAAAAA", find_distance.inspect
+      if find_distance <= dis.to_f
+        users_images << f
       end
     end
     users_images
@@ -267,6 +349,14 @@ class UserController < ApiController
 
   def pic_d_api_params
     params.permit(:pic_id, :auth_token, :image_data, :lng, :lat)
+  end
+
+  def like_pic_params
+    params.permit(:id, :auth_token)
+  end
+
+  def friends_api_params
+    params.permit(:auth_token, :distance, :category)
   end
 
 end
