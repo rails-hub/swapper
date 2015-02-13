@@ -138,6 +138,9 @@ class UserController < ApiController
       #Once image upload is successful check users with less than 20 meter range difference from this user
       puts "THIS-IS-USER::::", user.inspect
       if @id != 0
+        puts "AAAAAAAAAAAAAAAAAAA",@id.inspect
+        puts "AAAAAAAAAAAAAAAAAAA",@id.inspect
+        puts "AAAAAAAAAAAAAAAAAAA",@id.inspect
         delete_all_others_of_this_box(@id, user, pic_api_params[:box_id])
         render :json => {:status => 200, :message => "Image uploaded successfully", :id => @id, :url_original => @url, :url_medium => @url_medium, :url_thumb => @url_thumb}
       else
