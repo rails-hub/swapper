@@ -127,7 +127,11 @@ class UserController < ApiController
         img = UserImage.new
         img.avatar = data
         img.user_id = user.id
-        @save_img = img.save
+        if @save_img = img.save
+          puts "ImageSaved::ImageSaved::ImageSaved"
+        else
+          puts "ImageNotSaved::ImageNotSaved::ImageNotSaved"
+        end
         @url = img.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')
         img.update_attributes(:url => @url, :box_id => pic_api_params[:box_id], :title => pic_api_params[:title], :lat => pic_api_params[:lat], :lng => pic_api_params[:lng])
         @url_medium = img.avatar.url(:medium).to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')
@@ -138,9 +142,9 @@ class UserController < ApiController
       #Once image upload is successful check users with less than 20 meter range difference from this user
       puts "THIS-IS-USER::::", user.inspect
       if @id != 0 && @id != nil
-        puts "AAAAAAAAAAAAAAAAAAA",@id.inspect
-        puts "AAAAAAAAAAAAAAAAAAA",@id.inspect
-        puts "AAAAAAAAAAAAAAAAAAA",@id.inspect
+        puts "id::id::id::id::id::id::", @id.inspect
+        puts "id::id::id::id::id::id::", @id.inspect
+        puts "id::id::id::id::id::id::", @id.inspect
         delete_all_others_of_this_box(@id, user, pic_api_params[:box_id])
         render :json => {:status => 200, :message => "Image uploaded successfully", :id => @id, :url_original => @url, :url_medium => @url_medium, :url_thumb => @url_thumb}
       else
@@ -261,10 +265,10 @@ class UserController < ApiController
     i = 0
     UserImage.where('user_id = ?', user.id).order("created_at DESC").each do |f|
       find_distance = distance user.lat, user.lng, f.lat, f.lng
-      puts "AAAAAAAAA", user.lat.inspect
-      puts "AAAAAAAAA", f.lat.inspect
-      puts "AAAAAAAAA", find_distance.inspect
-      puts "AAAAAAAAA", find_distance.inspect
+      puts "LAT1:::::::", user.lat.inspect
+      puts "LAT2:::::::", f.lat.inspect
+      puts "Distance::Distance::Distance::Distance::", find_distance.inspect
+      puts "Distance::Distance::Distance::Distance::", find_distance.inspect
       if find_distance <= dis.to_f
         users_images << f
         if i >= 5
