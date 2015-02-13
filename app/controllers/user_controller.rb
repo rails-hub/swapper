@@ -137,7 +137,7 @@ class UserController < ApiController
       end
       #Once image upload is successful check users with less than 20 meter range difference from this user
       puts "THIS-IS-USER::::", user.inspect
-      if @id != 0
+      if @id != 0 && @id != nil
         puts "AAAAAAAAAAAAAAAAAAA",@id.inspect
         puts "AAAAAAAAAAAAAAAAAAA",@id.inspect
         puts "AAAAAAAAAAAAAAAAAAA",@id.inspect
