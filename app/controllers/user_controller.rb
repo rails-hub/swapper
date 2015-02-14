@@ -233,6 +233,8 @@ class UserController < ApiController
         find_report = UserReport.where('user_id = ? and user_image_id = ?', u.id, pic.id)
         if find_report.blank?
           user_report = UserReport.new(:user_id => u.id, :user_image_id => pic.id)
+          puts "AAAAAAAAAAAAAAAAAAAAAAA",user_report.errors.inspect
+          puts "AAAAAAAAAAAAAAAAAAAAAAA",user_report.errors.inspect
           if user_report.save
             pic_report = UserReport.find_by_user_image_id(pic.id)
             if pic_report.count >= 3
