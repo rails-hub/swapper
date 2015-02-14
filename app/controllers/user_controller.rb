@@ -133,7 +133,7 @@ class UserController < ApiController
           puts "ImageNotSaved::ImageNotSaved::ImageNotSaved"
         end
         @url = img.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')
-        img.update_attributes(:url => @url, :box_id => pic_api_params[:box_id], :title => pic_api_params[:title], :lat => pic_api_params[:lat], :lng => pic_api_params[:lng])
+        img.update_attributes(:url => @url, :box_id => pic_api_params[:box_id], :title => pic_api_params[:title], :lat => pic_api_params[:lat], :lng => pic_api_params[:lng], :category => pic_api_params[:category])
         @url_medium = img.avatar.url(:medium).to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')
         @url_thumb = img.avatar.url(:thumb).to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')
         @id = img.id
