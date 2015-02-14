@@ -259,7 +259,9 @@ class UserController < ApiController
   def friends
     u = User.find_by_auth_token(friends_api_params[:auth_token])
     unless u.blank?
-      render :json => {:images => images_with_distance_and_cat(u, friends_api_params[:distance], friends_api_params[:category])}
+      images = images_with_distance_and_cat(u, friends_api_params[:distance], friends_api_params[:category])
+      images = add_likes(images)
+      render :json => {:images => images}
     else
       error "No such user found."
     end
