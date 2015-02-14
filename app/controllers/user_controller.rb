@@ -143,15 +143,6 @@ class UserController < ApiController
         # PushController.push_message_to_user "Picture was uploaded", user, "Picture Uploaded Successfully", @id, @url, @url_medium, @url_thumb
       end
 
-         img.user_id = user.id
-         @save_img = img.save
-         @url = img.avatar.url
-         img.update_attribute('url', @url)
-         @url_medium = img.avatar.url(:medium)
-         @url_thumb = img.avatar.url(:thumb)
-         @id = img.id
-         # PushController.push_message_to_user "Picture was uploaded", user, "Picture Uploaded Successfully", @id, @url, @url_medium, @url_thumb
-       end
       #Once image upload is successful check users with less than 20 meter range difference from this user
       puts "THIS-IS-USER::::", user.inspect
       if @id != 0 && @id != nil
