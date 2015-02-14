@@ -127,7 +127,9 @@ class UserController < ApiController
         img = UserImage.new
         img.avatar = data
         img.user_id = user.id
-        puts "AAAAAAAAAAAAAAAAA", img.save.errors.inspect
+        puts "AAAAAAAAAAAAAAAAA", img.errors.inspect
+        puts "AAAAAAAAAAAAAAAAA", img.errors.inspect
+        puts "AAAAAAAAAAAAAAAAA", img.errors.inspect
         if @save_img = img.save
           puts "ImageSaved::ImageSaved::ImageSaved"
         else
