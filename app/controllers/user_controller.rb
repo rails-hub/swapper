@@ -340,7 +340,7 @@ class UserController < ApiController
   def add_likes images
     unless images.blank?
       images.each do |f|
-        f.merge!(like_count: UserLike.find_all_by_user_image_id(f.id).count)
+        f.as_json.merge!(like_count: UserLike.find_all_by_user_image_id(f.id).count)
       end
     end
     images
