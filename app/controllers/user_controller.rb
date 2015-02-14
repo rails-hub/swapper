@@ -338,12 +338,13 @@ class UserController < ApiController
   end
 
   def add_likes images
+    img = []
     unless images.blank?
       images.each do |f|
-        f.as_json.merge!(like_count: UserLike.find_all_by_user_image_id(f.id).count)
+        img << f.as_json.merge!(like_count: UserLike.find_all_by_user_image_id(f.id).count)
       end
     end
-    images
+    img
   end
 
   def register_api_params
