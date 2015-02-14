@@ -227,16 +227,22 @@ class UserController < ApiController
 
   def report_pic
     u = User.find_by_auth_token(like_pic_params[:auth_token])
+    puts "AAAAAAAAAAAAAAAAAAAAAAAAA"
     unless u.blank?
+      puts "BBBBBBBBBBBBBBBBBBBBBB"
       pic = UserImage.find_by_id(like_pic_params[:pic_id])
+      puts "CCCCCCCCCCCCCCCCCCCCCCCC"
       unless pic.blank?
+        puts "DDDDDDDDDDDDDDDD"
         find_report = UserReport.where('user_id = ? and user_image_id = ?', u.id, pic.id)
         if find_report.blank?
+          puts "EEEEEEEEEEEEEEEEEE"
           user_report = UserReport.new(:user_id => u.id, :user_image_id => pic.id)
-          puts "AAAAAAAAAAAAAAAAAAAAAAA",user_report.errors.inspect
-          puts "AAAAAAAAAAAAAAAAAAAAAAA",user_report.errors.inspect
+          puts "FFFFFFFFFFFFFFFFF"
           if user_report.save
+            puts "GGGGGGGGGGGGGGGGG"
             pic_report = UserReport.find_by_user_image_id(pic.id)
+            puts "HHHHHHHHHHHHHHH"
             if pic_report.count >= 3
               pic.destroy
               success "Reported and Image deleted."
