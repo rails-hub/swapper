@@ -205,9 +205,9 @@ class UserController < ApiController
     unless u.blank?
       pic = UserImage.find_by_id(like_pic_params[:pic_id])
       unless pic.blank?
-        find_pic = UserLike.where('user_id = ? and user_images_id = ?', u.id, pic.id)
+        find_pic = UserLike.where('user_id = ? and user_image_id = ?', u.id, pic.id)
         if find_pic.blank?
-          user_like = UserLike.new(:user_id => u.id, :user_images_id => pic.id)
+          user_like = UserLike.new(:user_id => u.id, :user_image_id => pic.id)
           if user_like.save
             render :json => {:message => "Success", :image_id => pic.id, :like_count => pic.user_likes.count}
           else
@@ -230,9 +230,9 @@ class UserController < ApiController
     unless u.blank?
       pic = UserImage.find_by_id(like_pic_params[:pic_id])
       unless pic.blank?
-        find_report = UserReport.where('user_id = ? and user_images_id = ?', u.id, pic.id)
+        find_report = UserReport.where('user_id = ? and user_image_id = ?', u.id, pic.id)
         if find_report.blank?
-          user_report = UserReport.new(:user_id => u.id, :user_images_id => pic.id)
+          user_report = UserReport.new(:user_id => u.id, :user_image_id => pic.id)
           if user_report.save
             pic_report = UserReport.find_by_user_image_id(pic.id)
             if pic_report.count >= 3
