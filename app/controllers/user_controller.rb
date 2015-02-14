@@ -203,7 +203,7 @@ class UserController < ApiController
   def like_pic
     u = User.find_by_auth_token(like_pic_params[:auth_token])
     unless u.blank?
-      pic = UserImage.find_by_id(like_pic_params[:id])
+      pic = UserImage.find_by_id(like_pic_params[:pic_id])
       unless pic.blank?
         find_pic = UserLike.where('user_id = ? and user_images_id = ?', u.id, pic.id)
         if find_pic.blank?
@@ -228,7 +228,7 @@ class UserController < ApiController
   def report_pic
     u = User.find_by_auth_token(like_pic_params[:auth_token])
     unless u.blank?
-      pic = UserImage.find_by_id(like_pic_params[:id])
+      pic = UserImage.find_by_id(like_pic_params[:pic_id])
       unless pic.blank?
         find_report = UserReport.where('user_id = ? and user_images_id = ?', u.id, pic.id)
         if find_report.blank?
