@@ -378,7 +378,7 @@ class UserController < ApiController
   end
 
   def like_pic_params
-    params.permit(:id, :auth_token)
+    params.permit(:pic_id, :auth_token)
   end
 
   def friends_api_params
