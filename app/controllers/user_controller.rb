@@ -209,7 +209,7 @@ class UserController < ApiController
         if find_pic.blank?
           user_like = UserLike.new(:user_id => u.id, :user_image_id => pic.id)
           if user_like.save
-            render :json => {:message => "Success", :image_id => pic.id, :like_count => pic.user_likes.count}
+            render :json => {:message => "Success", :image_id => pic.id, :like_count => UserLike.find_all_by_user_image_id(pic.id).count}
           else
             error "Something went wrong."
           end
