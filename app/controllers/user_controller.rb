@@ -13,6 +13,7 @@ class UserController < ApiController
     @user = User.find_by_device_token(register_api_params[:device_token])
     @user = User.find_by_email(email) if @user.blank?
     if @user.blank?
+      user = @user
       @user = User.create(:email => email, :username => register_api_params[:username], :password => password, :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
       # images = images_with_distance(@user, register_api_params[:distance])
       images = UserImage.where('user_id = ?', user.id).order("created_at DESC").limit(6)
