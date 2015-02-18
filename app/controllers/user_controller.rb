@@ -234,7 +234,7 @@ class UserController < ApiController
         if find_report.blank?
           user_report = UserReport.new(:user_id => u.id, :user_image_id => pic.id)
           if user_report.save
-            pic_report = UserReport.find_by_user_image_id(pic.id)
+            pic_report = UserReport.find_all_by_user_image_id(pic.id)
             if pic_report.count >= 3
               pic.destroy
               success "Reported and Image deleted."
