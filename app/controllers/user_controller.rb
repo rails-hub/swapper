@@ -344,7 +344,7 @@ class UserController < ApiController
     img = []
     unless images.blank?
       images.each do |f|
-        img << f.as_json.merge!(like_count: UserLike.find_all_by_user_image_id(f.id).count)
+        img << f.as_json.merge!(like_count: UserLike.find_all_by_user_image_id(f.id).count, :udid => f.user.device_token)
       end
     end
     img
