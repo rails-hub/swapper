@@ -14,9 +14,10 @@ class UserController < ApiController
     @user = User.find_by_email(email) if @user.blank?
     if @user.blank?
       user = @user
-      @user = User.create(:email => email, :username => register_api_params[:username], :password => password, :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
+      @user = User.new(:email => email, :username => register_api_params[:username], :password => password, :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
+      @user.save!
       # images = images_with_distance(@user, register_api_params[:distance])
-      images = UserImage.where('user_id = ?', user.id).order("created_at DESC").limit(6)
+      images = UserImage.where('user_id = ?', @user.id).order("created_at DESC").limit(6)
       images = add_likes(images)
       render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
     else
