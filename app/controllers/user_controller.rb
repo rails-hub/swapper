@@ -261,6 +261,7 @@ class UserController < ApiController
   def friends
     u = User.find_by_auth_token(friends_api_params[:auth_token])
     unless u.blank?
+      u.update_attributes(:lng => friends_api_params[:lng].to_f, :lat => friends_api_params[:lat].to_f)
       images = images_with_distance_and_cat(u, friends_api_params[:distance], friends_api_params[:category])
       images = add_likes(images)
       render :json => {:images => images}
@@ -384,7 +385,7 @@ class UserController < ApiController
   end
 
   def friends_api_params
-    params.permit(:auth_token, :distance, :category)
+    params.permit(:auth_token, :distance, :category, :lng, :lat)
   end
 
 end
