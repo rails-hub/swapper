@@ -302,7 +302,7 @@ class UserController < ApiController
       puts "AAAAAAAAA", f.lat.inspect
       puts "AAAAAAAAA", find_distance.inspect
       puts "AAAAAAAAA", find_distance.inspect
-      if find_distance <= dis*1000.to_f
+      if find_distance.to_f <= dis*1000.to_f
         users_images << f
       end
     end
