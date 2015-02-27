@@ -169,12 +169,12 @@ class UserController < ApiController
       user.update_attributes(:lng => user_img_params[:lng].to_f, :lat => user_img_params[:lat].to_f)
       u = User.where('id != ?', user.id).first
       find_distance = distance user.lat, user.lng, u.lat, u.lng
-      # if find_distance <= 20
+      if find_distance <= 20
       images = add_likes(u.user_images.pluck(:url, :created_at))
       render :json => {:status => 200, :message => "Success", :user_id => u.id, :urls => images}
-      # else
-      #   render :json => {:status => 200, :message => "You are at longer distance than 20m from the other device."}
-      # end
+      else
+        render :json => {:status => 200, :message => "You are at longer distance than 20m from the other device."}
+      end
     else
       error "No such user found."
     end
