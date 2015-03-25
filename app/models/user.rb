@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
   has_many :user_places
   has_many :user_likes
   has_many :user_reports
+  has_many :user_chats
 
   #validates :password, presence: true, length: {minimum: 5, maximum: 120}, on: :create
   #validates :password, length: {minimum: 5, maximum: 120}, on: :update, allow_blank: true

@@ -170,8 +170,8 @@ class UserController < ApiController
       u = User.where('id != ?', user.id).first
       find_distance = distance user.lat, user.lng, u.lat, u.lng
       if find_distance <= 20
-      images = add_likes(u.user_images.pluck(:url, :created_at))
-      render :json => {:status => 200, :message => "Success", :user_id => u.id, :urls => images}
+        images = add_likes(u.user_images.pluck(:url, :created_at))
+        render :json => {:status => 200, :message => "Success", :user_id => u.id, :urls => images}
       else
         render :json => {:status => 200, :message => "You are at longer distance than 20m from the other device."}
       end
@@ -312,6 +312,38 @@ class UserController < ApiController
     users_images
   end
 
+  def chat_user
+    u = User.find_by_auth_token(chat_params[:auth_token])
+    unless u.blank?
+      u.update_attribute('lng', chat_params[:lng].to_f)
+      u.update_attribute('lat', chat_params[:lat].to_f)
+      user = User.where('device_token = ?', "#{chat_params[:udid]}").first
+      unless user.blank?
+        user_chat = UserChat.create!(:from => u.id, :to => user.id, :message => chat_params[:message])
+        success "chat sent successfully"
+      else
+        error "No user found."
+      end
+    else
+      error "No such user found."
+    end
+  end
+
+  def get_chat
+    u = User.find_by_auth_token(chat_params[:auth_token])
+    unless u.blank?
+      u.update_attribute('lng', chat_params[:lng].to_f)
+      u.update_attribute('lat', chat_params[:lat].to_f)
+      user = User.where('to = ?', "#{chat_params[:udid]}").first
+      user_chat = UserChat.where('to = ?', user.id).order("created_at DESC").limit(5)
+      render :json => {:status => 200, :message => "Success", :chat => user_chat}
+    else
+      error "No such user found."
+    end
+
+  end
+
+
   def distance lat1, long1, lat2, long2
     dtor = Math::PI/180
     r = 6378.14*1000
@@ -377,6 +409,10 @@ class UserController < ApiController
 
   def user_img_params
     params.permit(:auth_token, :lng, :lat)
+  end
+
+  def chat_params
+    params.permit(:auth_token, :lng, :lat, :message, :udid)
   end
 
   def pic_d_api_params
