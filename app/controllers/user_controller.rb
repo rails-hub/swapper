@@ -335,7 +335,7 @@ class UserController < ApiController
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
       user = User.where('device_token = ?', "#{chat_params[:udid]}").first
-      user_chat = UserChat.where('to = ?', user.id).order("created_at DESC").limit(5)
+      user_chat = UserChat.where(:to => user.id).order("created_at DESC").limit(5)
       render :json => {:status => 200, :message => "Success", :chat => user_chat}
     else
       error "No such user found."
