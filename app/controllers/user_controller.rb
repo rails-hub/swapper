@@ -319,7 +319,7 @@ class UserController < ApiController
       u.update_attribute('lat', chat_params[:lat].to_f)
       user = User.where('device_token = ?', "#{chat_params[:udid]}").first
       unless user.blank?
-        user_chat = UserChat.create!(:from => u.id, :to => user.id, :message => chat_params[:message])
+        user_chat = UserChat.create!(:m_from => u.id, :m_to => user.id, :message => chat_params[:message])
         success "chat sent successfully"
       else
         error "No user found."
