@@ -349,8 +349,7 @@ class UserController < ApiController
     unless u.blank?
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
-      user = User.where('device_token = ?', "#{chat_params[:udid]}").first
-      user_chats = UserChat.where('(m_to = ? or m_to = ?) and (m_from = ? or m_from = ?)' , user.id, u.id, u.id, user.id).group('user_image_id').order("created_at DESC")
+      user_chats = UserChat.where('(m_to = ? or m_from = ?)' , u.id, u.id).group('user_image_id').order("created_at DESC")
       images = []
       unless user_chats.blank?
         user_chats.each do |s|
