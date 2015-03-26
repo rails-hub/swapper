@@ -354,6 +354,8 @@ class UserController < ApiController
       unless user_chats.blank?
         user_chats.each do |s|
           puts "USER CHAT:::::", s.inspect
+          puts "USER CHAT:::::", s["user_image_id"].inspect
+          puts "USER CHAT:::::", s[1]["user_image_id"].inspect
           img = UserImage.find_by_id(s.user_image_id)
           unless img.blank?
             h = {:user_image_id => s.user_image_id, :uploaded_by => img.user.device_token, :image_url => img.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com'), :likes => img.user_likes.count}
