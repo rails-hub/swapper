@@ -335,8 +335,8 @@ class UserController < ApiController
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
       user = User.where('device_token = ?', "#{chat_params[:udid]}").first
-      user_chat = UserChat.where('(m_to = ? or m_to = ?) and (m_from = ? or m_from = ?) and user_image_id = ?' , user.id, u.id, u.id, user.id, chat_params[:image_id]).order("created_at DESC").limit(5)
-      puts "CHATS:::::",user_chat.inspect
+      user_chat = UserChat.where('(m_to = ? or m_to = ?) and (m_from = ? or m_from = ?) and user_image_id = ?', user.id, u.id, u.id, user.id, chat_params[:image_id]).order("created_at DESC").limit(5)
+      puts "CHATS:::::", user_chat.inspect
       render :json => {:status => 200, :message => "Success", :chat => user_chat}
     else
       error "No such user found."
@@ -349,16 +349,18 @@ class UserController < ApiController
     unless u.blank?
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
-      user_chats = UserChat.where('(m_to = ? or m_from = ?)' , u.id, u.id).group('user_image_id').order("created_at DESC")
+      user_chats = UserChat.where('(m_to = ? or m_from = ?)', u.id, u.id).group('user_image_id').order("created_at DESC")
       images = []
       unless user_chats.blank?
         user_chats.each do |s|
           puts "USER CHAT:::::", s.inspect
-          h = {:user_image_id => s.user_image_id , :uploaded_by => s.user_image.user.device_token, :image_url => s.user_image.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com') , :likes =>  s.user_image.}
-          images << h
+          unless s.user_image.blank?
+            h = {:user_image_id => s.user_image_id, :uploaded_by => s.user_image.user.device_token, :image_url => s.user_image.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com'), :likes => s.user_image.user_likes.count}
+            images << h
+          end
         end
       end
-      puts "Chat Images:::::",images.inspect
+      puts "Chat Images:::::", images.inspect
       render :json => {:status => 200, :message => "Success", :images => images}
     else
       error "No such user found."
