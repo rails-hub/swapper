@@ -344,6 +344,28 @@ class UserController < ApiController
 
   end
 
+  def get_chat_images
+    u = User.find_by_auth_token(chat_params[:auth_token])
+    unless u.blank?
+      u.update_attribute('lng', chat_params[:lng].to_f)
+      u.update_attribute('lat', chat_params[:lat].to_f)
+      user = User.where('device_token = ?', "#{chat_params[:udid]}").first
+      user_chats = UserChat.where('(m_to = ? or m_to = ?) and (m_from = ? or m_from = ?)' , user.id, u.id, u.id, user.id).group('user_image_id').order("created_at DESC")
+      images = []
+      unless user_chats.blank?
+        user_chats.each do |s|
+          h = {:user_image_id => s.user_image_id , :uploaded_by => f.user_image.user.device_token, :image_url => f.user_image.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')}
+          images << h
+        end
+      end
+      puts "Chat Images:::::",images.inspect
+      render :json => {:status => 200, :message => "Success", :images => images}
+    else
+      error "No such user found."
+    end
+
+  end
+
 
   def distance lat1, long1, lat2, long2
     dtor = Math::PI/180
