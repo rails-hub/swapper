@@ -353,7 +353,8 @@ class UserController < ApiController
       images = []
       unless user_chats.blank?
         user_chats.each do |s|
-          h = {:user_image_id => s.user_image_id , :uploaded_by => f.user_image.user.device_token, :image_url => f.user_image.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com')}
+          puts "USER CHAT:::::", s.inspect
+          h = {:user_image_id => s.user_image_id , :uploaded_by => s.user_image.user.device_token, :image_url => s.user_image.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com') , :likes =>  s.user_image.}
           images << h
         end
       end
