@@ -11,12 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150212143916) do
+ActiveRecord::Schema.define(version: 20156256579945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "hstore"
   enable_extension "uuid-ossp"
+
+  create_table "user_chats", force: true do |t|
+    t.integer  "m_from"
+    t.integer  "m_to"
+    t.text     "message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "user_image_id"
+  end
 
   create_table "user_images", force: true do |t|
     t.string   "avatar_file_name"
@@ -35,6 +44,13 @@ ActiveRecord::Schema.define(version: 20150212143916) do
   end
 
   create_table "user_likes", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "user_image_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "user_reports", force: true do |t|
     t.integer  "user_id"
     t.integer  "user_image_id"
     t.datetime "created_at"

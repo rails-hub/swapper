@@ -319,7 +319,7 @@ class UserController < ApiController
       u.update_attribute('lat', chat_params[:lat].to_f)
       user = User.where('device_token = ?', "#{chat_params[:udid]}").first
       unless user.blank?
-        user_chat = UserChat.create!(:m_from => u.id, :m_to => user.id, :message => chat_params[:message])
+        user_chat = UserChat.create!(:m_from => u.id, :m_to => user.id, :message => chat_params[:message], :user_image_id => chat_params[:image_id])
         success "chat sent successfully"
       else
         error "No user found."
@@ -335,7 +335,7 @@ class UserController < ApiController
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
       user = User.where('device_token = ?', "#{chat_params[:udid]}").first
-      user_chat = UserChat.where('(m_to = ? or m_to = ?) and (m_from = ? or m_from = ?)' , user.id, u.id, u.id, user.id).order("created_at DESC").limit(5)
+      user_chat = UserChat.where('(m_to = ? or m_to = ?) and (m_from = ? or m_from = ?) and user_image_id = ?' , user.id, u.id, u.id, user.id, chat_params[:image_id]).order("created_at DESC").limit(5)
       puts "CHATS:::::",user_chat.inspect
       render :json => {:status => 200, :message => "Success", :chat => user_chat}
     else
@@ -413,7 +413,7 @@ class UserController < ApiController
   end
 
   def chat_params
-    params.permit(:auth_token, :lng, :lat, :message, :udid)
+    params.permit(:auth_token, :lng, :lat, :message, :udid, :image_id)
   end
 
   def pic_d_api_params
