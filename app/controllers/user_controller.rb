@@ -356,8 +356,10 @@ class UserController < ApiController
         user_chats.each do |s|
           puts "USER CHAT:::::", s.inspect
           img = UserImage.find_by_id(s.user_image_id)
+          from = User.where("id = ?", s.m_from).first
+          to = User.where("id = ?", s.m_to).first
           unless img.blank?
-            h = {:user_image_id => s.user_image_id, :uploaded_by => img.user.device_token, :image_url => img.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com'), :likes => img.user_likes.count}
+            h = {:user_image_id => s.user_image_id, :uploaded_by => img.user.device_token, :from => from.device_token,  :to => to.device_token, :title => img.title ,:image_url => img.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com'), :likes => img.user_likes.count}
             images << h
           end
         end
