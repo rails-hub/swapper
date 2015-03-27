@@ -350,14 +350,14 @@ class UserController < ApiController
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
       user_chats = UserChat.where('(m_to = ? or m_from = ?)', u.id, u.id)
-      user_chats =  user_chats.select("DISTINCT(user_image_id)")
+      user_chats =  user_chats.select("id, m_from, m_to, message, created_at, updated_at, DISTINCT(user_image_id)")
       images = []
       unless user_chats.blank?
         user_chats.each do |s|
           puts "USER CHAT:::::", s.inspect
           img = UserImage.find_by_id(s.user_image_id)
-          from = User.where("id = ?", s.m_from).first
-          to = User.where("id = ?", s.m_to).first
+          from = User.find_by_id(s.m_from)
+          to = User.find_by_id(s.m_to)
           unless img.blank?
             h = {:user_image_id => s.user_image_id, :uploaded_by => img.user.device_token, :from => from.device_token,  :to => to.device_token, :title => img.title ,:image_url => img.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com'), :likes => img.user_likes.count}
             images << h
