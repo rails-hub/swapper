@@ -436,12 +436,10 @@ class UserController < ApiController
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
       user = User.where('device_token = ?', chat_params[:udid]).first
-      unless user.blank?
-        user_friends = UserFriend.where('user_id = ?', user.id)
-        render :json => {:status => 200, :message => "Success", :friends => user_friends}
-      else
-        error "This user doesn't exist."
-      end
+      user_friends = UserFriend.where('user_id = ?', user.id)
+      render :json => {:status => 200, :message => "Success", :friends => user_friends}
+    else
+      error "This user doesn't exist."
     end
   else
     error "No such user found."
