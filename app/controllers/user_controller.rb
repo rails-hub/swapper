@@ -351,7 +351,7 @@ class UserController < ApiController
       u.update_attribute('lat', chat_params[:lat].to_f)
       last_message = UserChat.where('id = ?', "#{chat_params[:id]}").first
       unless last_message.blank?
-        user_chat = UserChat.where('created_at < ? and (m_to = ? or m_to = ?) and (m_from = ? or m_from = ?) and user_image_id = ?', "#{last_message.created_at}"  ,last_message.m_from, last_message.m_to, last_message.m_to, last_message.m_from, last_message.user_image_id).order("created_at DESC").limit(20)
+        user_chat = UserChat.where('created_at < ? and (m_to = ? or m_to = ?) and (m_from = ? or m_from = ?) and user_image_id = ?', "#{last_message.created_at}", last_message.m_from, last_message.m_to, last_message.m_to, last_message.m_from, last_message.user_image_id).order("created_at DESC").limit(20)
         puts "CHATS:::::", user_chat.inspect
         render :json => {:status => 200, :message => "Success", :chat => user_chat}
       else
@@ -369,7 +369,7 @@ class UserController < ApiController
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
       user_chats = UserChat.where('(m_to = ? or m_from = ?)', u.id, u.id)
-      user_chats =  user_chats.select("distinct user_image_id, m_from, m_to")
+      user_chats = user_chats.select("distinct user_image_id, m_from, m_to")
       images = []
       unless user_chats.blank?
         user_chats.each do |s|
@@ -378,7 +378,7 @@ class UserController < ApiController
           from = User.find_by_id(s.m_from)
           to = User.find_by_id(s.m_to)
           unless img.blank?
-            h = {:user_image_id => s.user_image_id, :uploaded_by => img.user.device_token, :from => from.device_token,  :to => to.device_token, :title => img.title ,:image_url => img.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com'), :likes => img.user_likes.count}
+            h = {:user_image_id => s.user_image_id, :uploaded_by => img.user.device_token, :from => from.device_token, :to => to.device_token, :title => img.title, :image_url => img.avatar.url.to_s.gsub('s3.amazonaws.com', 's3-us-west-2.amazonaws.com'), :likes => img.user_likes.count}
             images << h
           end
         end
@@ -390,6 +390,59 @@ class UserController < ApiController
     end
 
   end
+
+  def load_prev_message
+    u = User.find_by_auth_token(chat_params[:auth_token])
+    unless u.blank?
+      u.update_attribute('lng', chat_params[:lng].to_f)
+      u.update_attribute('lat', chat_params[:lat].to_f)
+      last_message = UserChat.where('id = ?', "#{chat_params[:id]}").first
+      unless last_message.blank?
+        user_chat = UserChat.where('created_at < ? and (m_to = ? or m_to = ?) and (m_from = ? or m_from = ?) and user_image_id = ?', "#{last_message.created_at}", last_message.m_from, last_message.m_to, last_message.m_to, last_message.m_from, last_message.user_image_id).order("created_at DESC").limit(20)
+        puts "CHATS:::::", user_chat.inspect
+        render :json => {:status => 200, :message => "Success", :chat => user_chat}
+      else
+        error "No Such Chat Record Found"
+      end
+    else
+      error "No such user found."
+    end
+
+  end
+
+  def save_friends
+    u = User.find_by_auth_token(chat_params[:auth_token])
+    unless u.blank?
+      u.update_attribute('lng', chat_params[:lng].to_f)
+      u.update_attribute('lat', chat_params[:lat].to_f)
+      user_friends = UserFriend.where('user_id = ?', u.id).first
+      user_friends.destroy_all unless user_friends.blank?
+      unless chat_params[:udids].blank?
+        chat_params[:udids].split(',').each do |s|
+          friend = UserFriend.create(:user_id => u.id, :my_udid => u.device_token, :friend_udids => s)
+        end
+        success "Friends Created Successfully."
+      else
+        error "No UDID's Provided."
+      end
+    else
+      error "No such user found."
+    end
+  end
+
+  def get_friends
+    u = User.find_by_auth_token(chat_params[:auth_token])
+    unless u.blank?
+      u.update_attribute('lng', chat_params[:lng].to_f)
+      u.update_attribute('lat', chat_params[:lat].to_f)
+      user_friends = UserFriend.where('user_id = ?', u.id)
+      render :json => {:status => 200, :message => "Success", :friends => user_friends}
+      end
+    else
+      error "No such user found."
+    end
+  end
+
 
 
   def distance lat1, long1, lat2, long2
@@ -460,7 +513,7 @@ class UserController < ApiController
   end
 
   def chat_params
-    params.permit(:auth_token, :lng, :lat, :message, :udid, :image_id, :id)
+    params.permit(:auth_token, :lng, :lat, :message, :udid, :udids, :image_id, :id)
   end
 
   def pic_d_api_params

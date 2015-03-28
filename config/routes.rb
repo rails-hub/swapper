@@ -10,6 +10,8 @@ Swapper::Application.routes.draw do
   match 'api/get_chat' => 'user#get_chat', via: [:get]
   match 'api/get_chat_images' => 'user#get_chat_images', via: [:get]
   match 'api/load_prev_message' => 'user#load_prev_message', via: [:get]
+  match 'api/save_friends' => 'user#save_friends', via: [:post]
+  match 'api/get_friends' => 'user#get_friends', via: [:get]
 
   root to: "home#index"
  end
