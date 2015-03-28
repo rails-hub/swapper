@@ -351,7 +351,7 @@ class UserController < ApiController
       u.update_attribute('lat', chat_params[:lat].to_f)
       last_message = UserChat.where('id = ?', "#{chat_params[:id]}").first
       unless last_message.blank?
-        user_chat = UserChat.where('created_at < ? and (m_to = ? or m_to = ?) and (m_from = ? or m_from = ?) and user_image_id = ?', last_message.created_at ,last_message.id ,last_message.m_from, last_message.m_to, last_message.m_to, last_message.m_from, last_message.user_image_id).order("created_at DESC").limit(20)
+        user_chat = UserChat.where('created_at < ? and (m_to = ? or m_to = ?) and (m_from = ? or m_from = ?) and user_image_id = ?', "#{last_message.created_at}"  ,last_message.m_from, last_message.m_to, last_message.m_to, last_message.m_from, last_message.user_image_id).order("created_at DESC").limit(20)
         puts "CHATS:::::", user_chat.inspect
         render :json => {:status => 200, :message => "Success", :chat => user_chat}
       else
