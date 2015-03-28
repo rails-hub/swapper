@@ -437,13 +437,10 @@ class UserController < ApiController
       u.update_attribute('lat', chat_params[:lat].to_f)
       user_friends = UserFriend.where('user_id = ?', u.id)
       render :json => {:status => 200, :message => "Success", :friends => user_friends}
-      end
-    else
-      error "No such user found."
     end
+  else
+    error "No such user found."
   end
-
-
 
   def distance lat1, long1, lat2, long2
     dtor = Math::PI/180
