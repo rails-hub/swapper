@@ -443,11 +443,10 @@ class UserController < ApiController
       user = User.where('device_token = ?', chat_params[:udid]).first
       user_friends = UserFriend.where('user_id = ?', user.id)
       render :json => {:status => 200, :message => "Success", :friends => user_friends}
-    else
       error "This user doesn't exist."
+    else
+      error "No such user found."
     end
-  else
-    error "No such user found."
   end
 
   def distance lat1, long1, lat2, long2
