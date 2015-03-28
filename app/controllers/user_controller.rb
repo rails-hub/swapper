@@ -416,7 +416,12 @@ class UserController < ApiController
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
       user_friends = UserFriend.where('user_id = ?', u.id).first
-      user_friends.destroy_all unless user_friends.blank?
+      unless user_friends.blank?
+        user_friends.each do |t|
+          t.destroy
+        end
+      end
+      user_friends.destroy_all
       unless chat_params[:udids].blank?
         chat_params[:udids].split(',').each do |s|
           friend = UserFriend.create(:user_id => u.id, :my_udid => u.device_token, :friend_udids => s)
