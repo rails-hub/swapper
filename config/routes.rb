@@ -1,4 +1,6 @@
 Swapper::Application.routes.draw do
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
   match 'api/register' => 'user#register_api', via: [:post]
   match 'api/upload_pic' => 'user#upload_pic', via: [:post]
   match 'api/download_pic' => 'user#download_pic', via: [:get]
