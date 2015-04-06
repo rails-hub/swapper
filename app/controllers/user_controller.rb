@@ -368,7 +368,7 @@ class UserController < ApiController
     unless u.blank?
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
-      user_chats = UserChat.where('(m_to = ? or m_from = ?)', u.id, u.id)
+      user_chats = UserChat.where('(m_to = ? or m_from = ?)', u.id, u.id).order("created_at DESC")
       user_chats = user_chats.select("distinct user_image_id, m_from, m_to")
       images = []
       unless user_chats.blank?
@@ -385,25 +385,6 @@ class UserController < ApiController
       end
       puts "Chat Images:::::", images.inspect
       render :json => {:status => 200, :message => "Success", :images => images}
-    else
-      error "No such user found."
-    end
-
-  end
-
-  def load_prev_message
-    u = User.find_by_auth_token(chat_params[:auth_token])
-    unless u.blank?
-      u.update_attribute('lng', chat_params[:lng].to_f)
-      u.update_attribute('lat', chat_params[:lat].to_f)
-      last_message = UserChat.where('id = ?', "#{chat_params[:id]}").first
-      unless last_message.blank?
-        user_chat = UserChat.where('created_at < ? and (m_to = ? or m_to = ?) and (m_from = ? or m_from = ?) and user_image_id = ?', "#{last_message.created_at}", last_message.m_from, last_message.m_to, last_message.m_to, last_message.m_from, last_message.user_image_id).order("created_at DESC").limit(20)
-        puts "CHATS:::::", user_chat.inspect
-        render :json => {:status => 200, :message => "Success", :chat => user_chat}
-      else
-        error "No Such Chat Record Found"
-      end
     else
       error "No such user found."
     end
