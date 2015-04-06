@@ -369,7 +369,7 @@ class UserController < ApiController
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
       user_chats = UserChat.where('(m_to = ? or m_from = ?)', u.id, u.id).order("created_at DESC")
-      user_chats = user_chats.select("distinct user_image_id, m_from, m_to")
+      user_chats = user_chats.select("distinct user_image_id, m_from, m_to, created_at")
       images = []
       unless user_chats.blank?
         user_chats.each do |s|
