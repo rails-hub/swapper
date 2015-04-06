@@ -368,8 +368,16 @@ class UserController < ApiController
     unless u.blank?
       u.update_attribute('lng', chat_params[:lng].to_f)
       u.update_attribute('lat', chat_params[:lat].to_f)
-      user_chats = UserChat.where('(m_to = ? or m_from = ?)', u.id, u.id).order("created_at DESC")
-      user_chats = user_chats.select("distinct user_image_id, m_from, m_to, created_at")
+      # user_chats = UserChat.where('(m_to = ? or m_from = ?)', u.id, u.id).order("created_at DESC")
+      user_chats = UserChat.find_by_sql("SELECT DISTINCT user_image_id, m_from, m_to
+      FROM (
+         SELECT *
+         FROM   user_chats
+         WHERE  m_to = #{u.id} or m_from = #{u.id}
+         ORDER  BY created_at DESC
+      ) sub
+      ")
+      # user_chats = user_chats.select("distinct user_image_id, m_from, m_to")
       images = []
       unless user_chats.blank?
         user_chats.each do |s|
